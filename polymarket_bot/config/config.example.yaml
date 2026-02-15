@@ -1,0 +1,57 @@
+# Polymarket Trading Bot Configuration
+# Copy this file to config.yaml and edit values as needed.
+# Sensitive credentials (private_key, api_key, etc.) should be set
+# via environment variables or .env file, NOT in this YAML file.
+
+api:
+  clob_host: "https://clob.polymarket.com"
+  gamma_host: "https://gamma-api.polymarket.com"
+  ws_host: "wss://ws-subscriptions-clob.polymarket.com"
+  chain_id: 137
+  signature_type: 0  # 0=EOA, 1=Magic/Email, 2=Browser
+  # funder_address: ""  # Set via POLYMARKET_FUNDER_ADDRESS env var
+
+risk:
+  max_position_size_usd: 100.0      # Max USD per single position
+  max_total_exposure_usd: 500.0     # Max total portfolio exposure
+  max_positions: 10                  # Max concurrent positions
+  max_loss_per_trade_usd: 20.0      # Max loss allowed per trade
+  max_daily_loss_usd: 50.0          # Daily loss limit, bot pauses if hit
+  max_drawdown_pct: 10.0            # Max drawdown %, bot pauses if hit
+  kelly_fraction: 0.25              # Fraction of Kelly criterion to use
+  min_edge_pct: 2.0                 # Minimum edge in % to execute
+  stop_loss_pct: 15.0               # Stop loss as % of entry price
+
+arbitrage:
+  enabled: true
+  min_profit_pct: 2.5               # Minimum arb spread after fees
+  scan_interval_sec: 10.0           # How often to scan for arb opportunities
+  max_position_per_arb_usd: 50.0    # Max USD per arbitrage trade
+
+market_making:
+  enabled: true
+  spread_bps: 300                    # Spread in basis points (3%)
+  order_size_usd: 10.0              # Size of each limit order
+  max_inventory_usd: 100.0          # Max inventory per market
+  refresh_interval_sec: 30.0        # How often to refresh quotes
+  min_liquidity_usd: 1000.0         # Only make in liquid markets
+  max_price_drift_pct: 5.0          # Cancel if price moves this much
+
+value:
+  enabled: true
+  scan_interval_sec: 60.0           # How often to scan for value bets
+  min_volume_usd: 5000.0            # Minimum market volume
+  min_liquidity_usd: 2000.0         # Minimum market liquidity
+  lookback_trades: 100              # Number of trades for analysis
+  mean_reversion_threshold_pct: 5.0 # Price deviation for mean reversion
+  momentum_window: 20               # Window for momentum signals
+  max_position_per_trade_usd: 30.0  # Max USD per value trade
+
+bot:
+  dry_run: true                      # Paper trading mode (no real orders)
+  log_level: "INFO"                  # DEBUG, INFO, WARNING, ERROR
+  log_file: "polymarket_bot.log"
+  heartbeat_interval_sec: 60.0
+  market_refresh_interval_sec: 300.0 # How often to refresh market list
+  min_market_liquidity_usd: 500.0    # Filter out illiquid markets
+  excluded_tags: []                  # Tags to exclude (e.g., ["sports"])
