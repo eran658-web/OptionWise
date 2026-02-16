@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OptionWise Dashboard</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <h1 class="logo">OptionWise</h1>
+      <span id="status-badge" class="badge badge-stopped">Stopped</span>
+      <span id="dry-run-badge" class="badge badge-warn" style="display:none">DRY RUN</span>
+    </div>
+    <div class="header-right">
+      <span id="uptime" class="header-stat">Uptime: --</span>
+      <span id="cycles" class="header-stat">Cycles: 0</span>
+      <button id="btn-start" class="btn btn-success" onclick="App.startBot()">Start Bot</button>
+      <button id="btn-stop" class="btn btn-danger" style="display:none" onclick="App.stopBot()">Stop Bot</button>
+      <button id="btn-dry-run" class="btn btn-outline" onclick="App.toggleDryRun()">Toggle Dry Run</button>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="tabs">
+    <button class="tab active" data-tab="dashboard">Dashboard</button>
+    <button class="tab" data-tab="positions">Positions</button>
+    <button class="tab" data-tab="strategies">Strategies</button>
+    <button class="tab" data-tab="trades">Trade History</button>
+    <button class="tab" data-tab="config">Configuration</button>
+    <button class="tab" data-tab="logs">Logs</button>
+  </nav>
+
+  <!-- Content -->
+  <main class="content">
+
+    <!-- Dashboard Tab -->
+    <section id="tab-dashboard" class="tab-panel active">
+      <div class="cards">
+        <div class="card">
+          <div class="card-label">Total PnL</div>
+          <div id="total-pnl" class="card-value">$0.00</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Unrealized PnL</div>
+          <div id="unrealized-pnl" class="card-value">$0.00</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Exposure</div>
+          <div id="exposure" class="card-value">$0.00</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Drawdown</div>
+          <div id="drawdown" class="card-value">0.0%</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Open Positions</div>
+          <div id="position-count" class="card-value">0</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Daily Trades</div>
+          <div id="daily-trades" class="card-value">0</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Markets</div>
+          <div id="markets-count" class="card-value">0</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Daily PnL</div>
+          <div id="daily-pnl" class="card-value">$0.00</div>
+        </div>
+      </div>
+
+      <div id="error-banner" class="error-banner" style="display:none"></div>
+
+      <div class="panel">
+        <h3>Strategy Status</h3>
+        <div id="strategy-status" class="strategy-pills"></div>
+      </div>
+
+      <div class="panel">
+        <h3>Risk Status</h3>
+        <div id="risk-status">
+          <span id="risk-paused" class="badge badge-success">Active</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Positions Tab -->
+    <section id="tab-positions" class="tab-panel">
+      <div class="panel">
+        <h3>Open Positions</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Token</th>
+              <th>Side</th>
+              <th>Entry</th>
+              <th>Current</th>
+              <th>Size</th>
+              <th>PnL</th>
+              <th>Strategy</th>
+            </tr>
+          </thead>
+          <tbody id="positions-body">
+            <tr><td colspan="7" class="empty">No open positions</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Strategies Tab -->
+    <section id="tab-strategies" class="tab-panel">
+      <div id="strategies-container" class="strategy-cards">
+        <p class="empty">Loading strategies...</p>
+      </div>
+    </section>
+
+    <!-- Trade History Tab -->
+    <section id="tab-trades" class="tab-panel">
+      <div class="panel">
+        <h3>Trade History</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Strategy</th>
+              <th>Side</th>
+              <th>Token</th>
+              <th>Price</th>
+              <th>Size</th>
+              <th>Edge</th>
+            </tr>
+          </thead>
+          <tbody id="trades-body">
+            <tr><td colspan="7" class="empty">No trades yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Config Tab -->
+    <section id="tab-config" class="tab-panel">
+      <div class="config-grid">
+        <div class="panel">
+          <h3>Risk Management</h3>
+          <form id="form-risk" onsubmit="App.saveConfig('risk', event)">
+            <div id="config-risk-fields"></div>
+            <button type="submit" class="btn btn-primary">Save Risk Config</button>
+          </form>
+        </div>
+        <div class="panel">
+          <h3>Bot Settings</h3>
+          <form id="form-bot" onsubmit="App.saveConfig('bot', event)">
+            <div id="config-bot-fields"></div>
+            <button type="submit" class="btn btn-primary">Save Bot Config</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Logs Tab -->
+    <section id="tab-logs" class="tab-panel">
+      <div class="log-controls">
+        <div class="log-filters">
+          <button class="btn btn-sm active" data-level="ALL" onclick="App.filterLogs('ALL', this)">ALL</button>
+          <button class="btn btn-sm" data-level="DEBUG" onclick="App.filterLogs('DEBUG', this)">DEBUG</button>
+          <button class="btn btn-sm" data-level="INFO" onclick="App.filterLogs('INFO', this)">INFO</button>
+          <button class="btn btn-sm" data-level="WARNING" onclick="App.filterLogs('WARNING', this)">WARN</button>
+          <button class="btn btn-sm" data-level="ERROR" onclick="App.filterLogs('ERROR', this)">ERROR</button>
+        </div>
+        <label class="toggle-label">
+          <input type="checkbox" id="log-autoscroll" checked> Auto-scroll
+        </label>
+        <button class="btn btn-sm" onclick="App.clearLogs()">Clear</button>
+      </div>
+      <div id="log-container" class="log-container"></div>
+    </section>
+
+  </main>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
