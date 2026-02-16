@@ -10,6 +10,7 @@ import argparse
 import logging
 import signal
 import sys
+import threading
 import time
 from pathlib import Path
 from typing import Any
@@ -104,9 +105,10 @@ class TradingBot:
         self._running = True
         self._start_time = time.time()
 
-        # Register signal handlers for graceful shutdown
-        signal.signal(signal.SIGINT, self._signal_handler)
-        signal.signal(signal.SIGTERM, self._signal_handler)
+        # Register signal handlers for graceful shutdown (main thread only)
+        if threading.current_thread() is threading.main_thread():
+            signal.signal(signal.SIGINT, self._signal_handler)
+            signal.signal(signal.SIGTERM, self._signal_handler)
 
         logger.info("=" * 60)
         logger.info("Polymarket Trading Bot started")
