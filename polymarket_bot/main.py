@@ -331,6 +331,10 @@ def setup_logging(log_level: str, log_file: str) -> None:
         file_handler.setFormatter(formatter)
         root_logger.addHandler(file_handler)
 
+    # Silence noisy third-party HTTP loggers
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("httpcore").setLevel(logging.WARNING)
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Polymarket Trading Bot")
