@@ -19,7 +19,7 @@ from py_clob_client.clob_types import (
     OrderArgs,
     OrderType,
 )
-from py_clob_client.constants import BUY, SELL
+from py_clob_client.order_builder.constants import BUY, SELL
 
 from polymarket_bot.config.settings import Settings
 
