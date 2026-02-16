@@ -1,4 +1,20 @@
-py-clob-client>=0.18.0
+# NOTE: py-clob-client must be installed separately with --no-deps
+# because it pins a broken web3==6.14.0. See install instructions below.
+#
+# Install steps:
+#   pip install --no-deps py-clob-client
+#   pip install -r polymarket_bot/requirements.txt
+
+# web3 stack (unpinned to avoid py-clob-client's broken constraint)
+web3
+eth-account
+
+# py-clob-client sub-dependencies
+poly-eip712-structs
+py-order-utils
+py-builder-signing-sdk
+
+# App dependencies
 httpx>=0.27.0
 python-dotenv>=1.0.0
 pyyaml>=6.0.0
